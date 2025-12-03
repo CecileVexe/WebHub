@@ -72,7 +72,7 @@ export default function App() {
 
   // ✅ Home
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-blue-500 from-purple-50 via-pink-50 to-orange-50">
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply blur-3xl opacity-20 animate-blob" />
@@ -123,10 +123,10 @@ export default function App() {
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-12">
-            <h2 className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-4">
+            <h2 className="bg-white from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-4">
               Stunning Web Projects
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-white max-w-2xl mx-auto">
               Explore our curated collection of innovative web applications and beautiful designs
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function App() {
           {!loadingProjects && !projectsError && (
             <div>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-gray-900">Featured Projects</h2>
+                <h2 className="text-white">Featured Projects</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
