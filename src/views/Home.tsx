@@ -55,7 +55,7 @@ export default function App() {
   // ✅ Si on est sur la page CRUD, on affiche ProjectsPage directement
   if (page === "crud") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <div className="min-h-screen bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
             onClick={() => setPage("home")}
@@ -72,7 +72,7 @@ export default function App() {
 
   // ✅ Home
   return (
-    <div className="min-h-screen bg-grey-500 from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-black">
   {/* Animated Background Blobs — purely decorative */}
   <div
     className="fixed inset-0 overflow-hidden pointer-events-none"
@@ -163,7 +163,7 @@ export default function App() {
         >
           Stunning Web Projects
         </h2>
-        <p className="text-grey max-w-2xl mx-auto">
+        <p className="text-white max-w-2xl mx-auto">
           Explore our curated collection of innovative web applications and beautiful designs
         </p>
       </div>

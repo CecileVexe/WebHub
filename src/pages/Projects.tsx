@@ -179,7 +179,7 @@ export default function Projects() {
   }, [projects]);
 
   return (
-    <div className="min-h-screen bg-grey-600 from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-black from-purple-50 via-pink-50 to-orange-50">
       {/* background blobs (optionnel mais proche de ta home) */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply blur-3xl opacity-20 animate-blob" />
@@ -194,7 +194,7 @@ export default function Projects() {
             <h1 className="text-3xl md:text-4xl font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
               Gestion des projets
             </h1>
-            <p className="text-grey">
+            <p className="text-white">
               CRUD simple avec JSON Server — style “cards” comme ta home.
             </p>
           </div>
