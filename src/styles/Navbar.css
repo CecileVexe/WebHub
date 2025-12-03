@@ -1,0 +1,405 @@
+/* Navbar Component Styles */
+.figma-navbar {
+  height: 64px;
+  background: var(--color-light);
+  border-bottom: 1px solid rgba(16, 24, 40, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 2px 8px rgba(164, 54, 255, 0.05);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.nav-icon-button {
+  background: rgba(164, 54, 255, 0.05);
+  border: 1px solid rgba(164, 54, 255, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-icon-button:hover {
+  background: linear-gradient(135deg, rgba(164, 54, 255, 0.1), rgba(201, 37, 194, 0.1));
+  border-color: var(--color-primary-purple);
+  box-shadow: 0 4px 12px rgba(164, 54, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.nav-icon-button svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary-purple);
+}
+
+.project-title-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.project-title-nav h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--color-dark);
+  background: linear-gradient(135deg, var(--color-primary-purple), var(--color-primary-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+  backdrop-filter: blur(10px);
+  border: 1px solid;
+}
+
+.status-active {
+  background: linear-gradient(135deg, rgba(164, 54, 255, 0.1), rgba(201, 37, 194, 0.1));
+  color: var(--color-primary-purple);
+  border-color: rgba(164, 54, 255, 0.2);
+  box-shadow: 0 0 10px rgba(164, 54, 255, 0.2);
+}
+
+.status-completed {
+  background: linear-gradient(135deg, rgba(237, 19, 133, 0.1), rgba(246, 59, 67, 0.1));
+  color: var(--color-primary-coral);
+  border-color: rgba(246, 59, 67, 0.2);
+  box-shadow: 0 0 10px rgba(246, 59, 67, 0.2);
+}
+
+.status-archived {
+  background: rgba(16, 24, 40, 0.05);
+  color: var(--color-dark);
+  border-color: rgba(16, 24, 40, 0.1);
+}
+
+.navbar-center {
+  display: flex;
+  justify-content: center;
+  flex: 2;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  background: rgba(164, 54, 255, 0.03);
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(164, 54, 255, 0.1);
+}
+
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-dark);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.toolbar-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--color-primary-purple), var(--color-primary-pink));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.toolbar-button:hover::before {
+  opacity: 0.1;
+}
+
+.toolbar-button svg {
+  width: 18px;
+  height: 18px;
+  transition: all 0.3s;
+  stroke: currentColor;
+  fill: none;
+}
+
+.toolbar-button.active {
+  background: linear-gradient(135deg, var(--color-primary-purple), var(--color-primary-pink));
+  color: var(--color-light);
+  box-shadow: 0 4px 16px rgba(164, 54, 255, 0.3);
+}
+
+.toolbar-button.active svg {
+  stroke: var(--color-light);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ui-web-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo:hover .ui-web-logo {
+  transform: scale(1.05);
+}
+
+.share-button,
+.export-button,
+.close-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.share-button {
+  background: rgba(164, 54, 255, 0.05);
+  border-color: rgba(164, 54, 255, 0.2);
+  color: var(--color-primary-purple);
+}
+
+.share-button:hover {
+  background: linear-gradient(135deg, rgba(164, 54, 255, 0.1), rgba(201, 37, 194, 0.1));
+  box-shadow: 0 4px 12px rgba(164, 54, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.export-button {
+  background: linear-gradient(135deg, var(--color-primary-purple), var(--color-primary-pink));
+  border-color: transparent;
+  color: var(--color-light);
+  box-shadow: 0 4px 16px rgba(164, 54, 255, 0.3);
+}
+
+.export-button:hover {
+  box-shadow: 0 6px 20px rgba(164, 54, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.close-button {
+  background: rgba(246, 59, 67, 0.05);
+  border-color: rgba(246, 59, 67, 0.2);
+  color: var(--color-primary-coral);
+  padding: 10px;
+}
+
+.close-button:hover {
+  background: rgba(246, 59, 67, 0.1);
+  box-shadow: 0 4px 12px rgba(246, 59, 67, 0.2);
+  transform: translateY(-2px);
+}
+
+.share-button svg,
+.export-button svg,
+.close-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 1280px) {
+  .figma-navbar {
+    padding: 0 16px;
+  }
+  
+  .navbar-left,
+  .navbar-right {
+    flex: 0.8;
+  }
+  
+  .navbar-center {
+    flex: 1.5;
+  }
+  
+  .project-title-nav h1 {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .figma-navbar {
+    padding: 0 12px;
+    height: 56px;
+  }
+  
+  .navbar-left {
+    gap: 12px;
+  }
+  
+  .navbar-center {
+    flex: 2;
+  }
+  
+  .toolbar {
+    gap: 4px;
+    padding: 4px;
+  }
+  
+  .toolbar-button {
+    padding: 8px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+  
+  .toolbar-button span {
+    display: none;
+  }
+  
+  .toolbar-button svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .export-button span {
+    display: none;
+  }
+  
+  .status-badge {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .figma-navbar {
+    padding: 0 8px;
+    height: 52px;
+    gap: 8px;
+  }
+  
+  .navbar-left,
+  .navbar-right {
+    flex: 0;
+    min-width: fit-content;
+  }
+  
+  .navbar-center {
+    flex: 1;
+  }
+  
+  .project-title-nav h1 {
+    font-size: 14px;
+  }
+  
+  .status-badge {
+    display: none;
+  }
+  
+  .toolbar {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .toolbar-button {
+    padding: 8px;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .nav-icon-button,
+  .close-button {
+    padding: 8px;
+  }
+  
+  .export-button {
+    padding: 8px 10px;
+  }
+  
+  .navbar-right {
+    gap: 8px;
+  }
+  
+  .ui-web-logo {
+    height: 28px;
+  }
+  
+  .logo {
+    padding: 3px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .figma-navbar {
+    height: 48px;
+    padding: 0 6px;
+  }
+  
+  .project-title-nav h1 {
+    font-size: 13px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .toolbar-button {
+    padding: 6px;
+  }
+  
+  .toolbar-button svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .nav-icon-button svg,
+  .close-button svg,
+  .export-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .ui-web-logo {
+    height: 24px;
+  }
+  
+  .logo {
+    padding: 2px 8px;
+  }
+}
