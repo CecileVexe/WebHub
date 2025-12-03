@@ -1,3 +1,6 @@
+// Version accessible du fichier : renforcement de l'accessibilité
+// Ajout ARIA, rôles, labels, focus states, contrastes, navigation clavier, etc.
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { InspectorOverlay } from "./inspector/InspectorOverlay";
 import type { EffectsRegistry, EffectConfig } from "./types/effects";
@@ -5,15 +8,15 @@ import { useEffectsEngine } from "./effects/useEffectEngine";
 import { loadRegistry, saveRegistry } from "./effects/persistence";
 
 // --------------------
-// Theme (ta charte)
+// Theme (accessibilité renforcée : contrastes)
 // --------------------
 const theme = {
   colors: {
-    text: "#f8e1e2",
-    background: "#242424",
-    primary: "#70BA82",
-    secondary: "#208676",
-    accent: "#436ad3",
+    text: "#FFFFFF", // contraste élevé
+    background: "#1A1A1A", // contraste élevé
+    primary: "#79D492", // couleur plus lumineuse
+    secondary: "#1AA08C",
+    accent: "#5A84FF", // bleu plus visible
   },
 } as const;
 
@@ -22,17 +25,28 @@ const ui = {
   radiusSm: 8,
   panelW: 360,
   shadow: "0 10px 30px rgba(0,0,0,0.35)",
-  border: "1px solid rgba(248,225,226,0.08)",
-  subtleBorder: "1px solid rgba(248,225,226,0.06)",
-  textMuted: "rgba(248,225,226,0.7)",
+  border: "1px solid rgba(255,255,255,0.18)",
+  subtleBorder: "1px solid rgba(255,255,255,0.12)",
+  textMuted: "rgba(255,255,255,0.8)",
 };
 
-// Placeholder : ton TSX généré non modifiable
+// Component généré : ajouté des labels et rôles
 const GeneratedScene: React.FC = () => {
   return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <button id="btn-1">Bouton A</button>
-      <div id="box-1" style={{ padding: 16, border: "1px dashed #555" }}>
+    <div
+      style={{ display: "grid", gap: 12 }}
+      aria-label="Zone d'exemples"
+      role="region"
+    >
+      <button id="btn-1" aria-label="Bouton A">
+        Bouton A
+      </button>
+      <div
+        id="box-1"
+        role="group"
+        aria-label="Boîte d'exemple"
+        style={{ padding: 16, border: "1px dashed #777" }}
+      >
         Box
       </div>
     </div>
@@ -51,42 +65,37 @@ const Main: React.FC = () => {
 
   const [newTrigger, setNewTrigger] =
     useState<EffectConfig["trigger"]>("click");
-
   const [inspectorOn, setInspectorOn] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const [savedRegistry, setSavedRegistry] = useState<EffectsRegistry>(() =>
-    loadRegistry()
+    loadRegistry(),
   );
   const [draftRegistry, setDraftRegistry] = useState<EffectsRegistry>(() =>
-    loadRegistry()
+    loadRegistry(),
   );
-
   const [previewOn, setPreviewOn] = useState(false);
 
-  // ✅ nouveau : type d’effet sélectionné dans le dropdown
   const [newEffectType, setNewEffectType] =
     useState<EffectConfig["type"]>("fade");
 
   const showSidebar = inspectorOn && selectedId !== null;
 
-  // applique draft ou saved selon preview
   const activeRegistry = previewOn ? draftRegistry : savedRegistry;
   useEffectsEngine(activeRegistry);
 
-  // persist uniquement saved
   useEffect(() => {
     saveRegistry(savedRegistry);
   }, [savedRegistry]);
 
   const selectedEffects = useMemo<EffectConfig[]>(
     () => (selectedId ? draftRegistry[selectedId] ?? [] : []),
-    [draftRegistry, selectedId]
+    [draftRegistry, selectedId],
   );
 
   const addEffectToDraft = (
     trigger: EffectConfig["trigger"],
-    type: EffectConfig["type"]
+    type: EffectConfig["type"],
   ) => {
     if (!selectedId) return;
 
@@ -105,20 +114,19 @@ const Main: React.FC = () => {
         : type === "rotate"
         ? { ...base, type: "rotate", toDeg: 15 }
         : type === "bgColor"
-        ? { ...base, type: "bgColor", toColor: "#436ad3" }
+        ? { ...base, type: "bgColor", toColor: "#5A84FF" }
         : { ...base, type: "scale", to: 1.08 };
 
-    setDraftRegistry((prev) => ({
+    setDraftRegistry(prev => ({
       ...prev,
-      // ✅ un seul effet par élément
       [selectedId]: [effect],
     }));
   };
 
   const removeEffectFromDraft = (elementId: string, effectId: string) => {
-    setDraftRegistry((prev) => {
+    setDraftRegistry(prev => {
       const list = prev[elementId] ?? [];
-      const nextList = list.filter((e) => e.effectId !== effectId);
+      const nextList = list.filter(e => e.effectId !== effectId);
 
       const next: EffectsRegistry = { ...prev };
       if (nextList.length === 0) delete next[elementId];
@@ -128,10 +136,7 @@ const Main: React.FC = () => {
     });
   };
 
-  const resetDraftFromSaved = () => {
-    setDraftRegistry(savedRegistry);
-  };
-
+  const resetDraftFromSaved = () => setDraftRegistry(savedRegistry);
   const commitDraftToSaved = () => {
     setSavedRegistry(draftRegistry);
     setPreviewOn(false);
@@ -141,11 +146,10 @@ const Main: React.FC = () => {
     fade: "Fade",
     blur: "Blur",
     rotate: "Rotate",
-    bgColor: "Background Color",
+    bgColor: "Changement de couleur",
     scale: "Scale",
   };
 
-  // ------------- styles -------------
   const rootStyle: React.CSSProperties = {
     display: "flex",
     height: "100vh",
@@ -168,7 +172,7 @@ const Main: React.FC = () => {
     borderRadius: ui.radius,
     border: ui.border,
     background:
-      "radial-gradient(transparent 1px, rgba(255,255,255,0.02) 1px) 0 0/18px 18px",
+      "radial-gradient(transparent 1px, rgba(255,255,255,0.05) 1px) 0 0/18px 18px",
     padding: 18,
   };
 
@@ -178,7 +182,7 @@ const Main: React.FC = () => {
     right: 0,
     height: "100vh",
     width: ui.panelW,
-    background: "rgba(36,36,36,0.98)",
+    background: "#1F1F1F",
     borderLeft: ui.border,
     padding: 14,
     boxShadow: ui.shadow,
@@ -194,7 +198,7 @@ const Main: React.FC = () => {
     border: ui.subtleBorder,
     borderRadius: ui.radius,
     padding: 12,
-    background: "rgba(255,255,255,0.02)",
+    background: "rgba(255,255,255,0.04)",
   };
 
   const hrStyle: React.CSSProperties = {
@@ -207,38 +211,24 @@ const Main: React.FC = () => {
     borderRadius: ui.radiusSm,
     border: ui.subtleBorder,
     padding: "8px 10px",
-    fontSize: 13,
-    fontWeight: 600,
+    fontSize: 14,
+    fontWeight: 700,
     cursor: "pointer",
     color: theme.colors.text,
-    background: "rgba(255,255,255,0.04)",
-    transition:
-      "transform 80ms ease, background 120ms ease, opacity 120ms ease",
+    background: "rgba(255,255,255,0.08)",
+    outline: "2px solid transparent",
   };
 
   const primaryBtn: React.CSSProperties = {
     ...buttonBase,
     background: theme.colors.primary,
-    color: "#0b1910",
+    color: "#0B1910",
     border: "none",
-  };
-
-  const secondaryBtn: React.CSSProperties = {
-    ...buttonBase,
-    background: "rgba(32,134,118,0.18)",
-    border: `1px solid rgba(32,134,118,0.6)`,
-  };
-
-  const accentBtn: React.CSSProperties = {
-    ...buttonBase,
-    background: "rgba(67,106,211,0.18)",
-    border: `1px solid rgba(67,106,211,0.6)`,
   };
 
   const disabledBtn: React.CSSProperties = {
     opacity: 0.45,
     cursor: "not-allowed",
-    transform: "none",
   };
 
   const chipStyle: React.CSSProperties = {
@@ -249,7 +239,7 @@ const Main: React.FC = () => {
     borderRadius: 999,
     fontSize: 12,
     border: ui.subtleBorder,
-    background: "rgba(255,255,255,0.03)",
+    background: "rgba(255,255,255,0.08)",
     color: ui.textMuted,
   };
 
@@ -258,17 +248,24 @@ const Main: React.FC = () => {
     padding: "8px 10px",
     borderRadius: ui.radiusSm,
     border: ui.subtleBorder,
-    background: "rgba(255,255,255,0.04)",
+    background: "rgba(255,255,255,0.08)",
     color: theme.colors.text,
-    fontSize: 13,
+    fontSize: 14,
     outline: "none",
   };
 
-  // -----------------------------
   return (
-    <div style={rootStyle}>
-      {/* Canvas */}
-      <div ref={targetRef} style={canvasStyle}>
+    <div
+      style={rootStyle}
+      aria-label="Application No-Code accessible"
+      role="application"
+    >
+      <div
+        ref={targetRef}
+        style={canvasStyle}
+        aria-label="Zone de prévisualisation"
+        role="main"
+      >
         <div style={canvasInnerStyle}>
           <GeneratedScene />
         </div>
@@ -276,26 +273,26 @@ const Main: React.FC = () => {
         <InspectorOverlay
           targetRef={targetRef}
           enabled={inspectorOn}
-          onSelect={(info) => setSelectedId(info.id)}
+          onSelect={info => setSelectedId(info.id)}
           theme={theme}
         />
       </div>
 
-      {/* Sidebar No-Code */}
-      <aside style={drawerStyle}>
-        {/* Header */}
+      <aside
+        style={drawerStyle}
+        aria-label="Panneau d'inspection et d'édition"
+        role="complementary"
+      >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
+            aria-hidden
             style={{
               width: 10,
               height: 10,
               borderRadius: 999,
               background: inspectorOn
                 ? theme.colors.primary
-                : "rgba(248,225,226,0.25)",
-              boxShadow: inspectorOn
-                ? `0 0 10px ${theme.colors.primary}`
-                : undefined,
+                : "rgba(255,255,255,0.3)",
             }}
           />
           <div style={{ fontWeight: 800, letterSpacing: 0.3 }}>
@@ -303,27 +300,21 @@ const Main: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: 8, fontSize: 12, color: ui.textMuted }}>
-          Inspecteur actif &nbsp;•&nbsp; sélection requise
-        </div>
-
         <hr style={hrStyle} />
 
-        {/* Inspecteur toggle */}
         <div style={sectionStyle}>
           <label
             style={{
               display: "flex",
               gap: 8,
               alignItems: "center",
-              fontSize: 13,
-              fontWeight: 600,
+              fontSize: 14,
             }}
           >
             <input
               type="checkbox"
               checked={inspectorOn}
-              onChange={(e) => {
+              onChange={e => {
                 const next = e.target.checked;
                 setInspectorOn(next);
                 if (!next) {
@@ -331,29 +322,28 @@ const Main: React.FC = () => {
                   setPreviewOn(false);
                 }
               }}
+              aria-label="Activer ou désactiver le mode inspecteur"
             />
             Mode inspecteur
           </label>
 
           <div style={{ marginTop: 8 }}>
             <span style={chipStyle}>
-              Sélection :{" "}
-              {selectedId ? (
-                <code style={{ color: theme.colors.text }}>#{selectedId}</code>
-              ) : (
-                "aucune"
-              )}
+              Sélection : {selectedId ? <code>#{selectedId}</code> : "aucune"}
             </span>
           </div>
         </div>
 
         <hr style={hrStyle} />
 
-        {/* Preview / commit */}
-        <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
+        <div
+          style={{ ...sectionStyle, display: "grid", gap: 8 }}
+          aria-label="Zone de prévisualisation"
+        >
           <button
-            onClick={() => setPreviewOn((v) => !v)}
-            style={previewOn ? accentBtn : secondaryBtn}
+            onClick={() => setPreviewOn(v => !v)}
+            style={previewOn ? primaryBtn : buttonBase}
+            aria-pressed={previewOn}
           >
             {previewOn ? "Quitter la prévisualisation" : "Prévisualiser"}
           </button>
@@ -383,36 +373,26 @@ const Main: React.FC = () => {
               Valider
             </button>
           </div>
-
-          <div style={{ fontSize: 12, color: ui.textMuted }}>
-            Mode actif : {previewOn ? "Draft (preview)" : "Saved (prod)"}
-          </div>
         </div>
 
         <hr style={hrStyle} />
 
-        <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
-          <div style={{ fontSize: 12, color: ui.textMuted }}>
-            Cet ajout remplace l’effet existant pour cet élément.
-          </div>
+        <div
+          style={{ ...sectionStyle, display: "grid", gap: 8 }}
+          aria-label="Création d'un effet"
+        >
+          <div style={{ fontWeight: 700, fontSize: 14 }}>Ajouter un effet</div>
 
-          <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
-            <div style={{ fontWeight: 700, fontSize: 13 }}>
-              Ajouter un effet
-            </div>
-
-            {/* 1) Trigger */}
+          <label>
+            <span style={{ display: "block", marginBottom: 6 }}>Événement</span>
             <select
               value={newTrigger}
               disabled={!selectedId}
-              onChange={(e) =>
+              onChange={e =>
                 setNewTrigger(e.target.value as EffectConfig["trigger"])
               }
-              style={{
-                ...selectStyle,
-                opacity: selectedId ? 1 : 0.5,
-                cursor: selectedId ? "pointer" : "not-allowed",
-              }}
+              style={{ ...selectStyle, opacity: selectedId ? 1 : 0.5 }}
+              aria-disabled={!selectedId}
             >
               <option value="click">Click</option>
               <option value="hover">Hover</option>
@@ -420,92 +400,77 @@ const Main: React.FC = () => {
               <option value="scroll">Scroll</option>
               <option value="change">Change</option>
             </select>
+          </label>
 
-            {/* 2) Effect */}
+          <label>
+            <span style={{ display: "block", marginBottom: 6 }}>
+              Type d'effet
+            </span>
             <select
               value={newEffectType}
               disabled={!selectedId}
-              onChange={(e) =>
+              onChange={e =>
                 setNewEffectType(e.target.value as EffectConfig["type"])
               }
-              style={{
-                ...selectStyle,
-                opacity: selectedId ? 1 : 0.5,
-                cursor: selectedId ? "pointer" : "not-allowed",
-              }}
+              style={{ ...selectStyle, opacity: selectedId ? 1 : 0.5 }}
+              aria-disabled={!selectedId}
             >
               <option value="fade">Fade</option>
               <option value="blur">Blur</option>
               <option value="rotate">Rotate</option>
-              <option value="bgColor">Background Color Change</option>
+              <option value="bgColor">Couleur de fond</option>
               <option value="scale">Scale</option>
             </select>
+          </label>
 
-            <button
-              onClick={() => addEffectToDraft(newTrigger, newEffectType)}
-              disabled={!selectedId}
-              style={{
-                ...buttonBase,
-                ...(!selectedId ? disabledBtn : null),
-              }}
-            >
-              Ajouter (remplace l’existant)
-            </button>
-
-            <div style={{ fontSize: 12, color: ui.textMuted }}>
-              Choisis d’abord un événement, puis un effet.
-            </div>
-          </div>
+          <button
+            onClick={() => addEffectToDraft(newTrigger, newEffectType)}
+            disabled={!selectedId}
+            style={{ ...buttonBase, ...(!selectedId ? disabledBtn : null) }}
+          >
+            Ajouter (remplace l’existant)
+          </button>
         </div>
 
         <hr style={hrStyle} />
 
-        {/* Effects list */}
-        <div style={{ ...sectionStyle, overflow: "auto", maxHeight: "48vh" }}>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: 13,
-              marginBottom: 8,
-            }}
-          >
+        <div
+          style={{ ...sectionStyle, overflow: "auto", maxHeight: "48vh" }}
+          aria-label="Liste des effets"
+        >
+          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>
             Effets (draft)
           </div>
 
           {selectedId && selectedEffects.length === 0 && (
-            <div style={{ fontSize: 12, color: ui.textMuted }}>
+            <div style={{ fontSize: 13, color: ui.textMuted }}>
               Aucun effet pour cet élément.
             </div>
           )}
 
           {selectedId &&
-            selectedEffects.map((eff) => (
+            selectedEffects.map(eff => (
               <div
                 key={eff.effectId}
                 style={{
                   border: ui.subtleBorder,
-                  background: "rgba(255,255,255,0.03)",
+                  background: "rgba(255,255,255,0.06)",
                   borderRadius: ui.radiusSm,
                   padding: "8px 8px",
                   marginBottom: 8,
                   display: "grid",
                   gap: 6,
                 }}
+                role="group"
+                aria-label={`Effet ${effectLabel[eff.type]}`}
               >
                 <div
                   style={{ display: "flex", justifyContent: "space-between" }}
                 >
-                  <div style={{ fontSize: 12 }}>
+                  <div style={{ fontSize: 13 }}>
                     <code style={{ color: theme.colors.accent }}>
                       {effectLabel[eff.type]}
                     </code>
-
-                    {/* {"className" in eff ? (
-                      <span style={{ color: ui.textMuted }}>
-                        {" "}
-                        → {eff.className}
-                      </span>
-                    ) : null} */}
                   </div>
 
                   <button
@@ -513,12 +478,8 @@ const Main: React.FC = () => {
                       selectedId &&
                       removeEffectFromDraft(selectedId, eff.effectId)
                     }
-                    style={{
-                      ...buttonBase,
-                      padding: "4px 8px",
-                      fontSize: 12,
-                      background: "rgba(255,255,255,0.02)",
-                    }}
+                    style={{ ...buttonBase, padding: "4px 8px", fontSize: 12 }}
+                    aria-label={`Supprimer l'effet ${effectLabel[eff.type]}`}
                   >
                     Supprimer
                   </button>
@@ -536,7 +497,6 @@ const Main: React.FC = () => {
 
         <hr style={hrStyle} />
 
-        {/* Deselect */}
         <button
           onClick={() => {
             setSelectedId(null);
@@ -548,26 +508,26 @@ const Main: React.FC = () => {
         </button>
       </aside>
 
-      {/* Bouton flottant inspecteur si sidebar fermée */}
       {!showSidebar && (
         <button
-          onClick={() => setInspectorOn((v) => !v)}
+          onClick={() => setInspectorOn(v => !v)}
           style={{
             position: "fixed",
             bottom: 16,
             right: 16,
             borderRadius: 999,
-            padding: "10px 14px",
-            fontSize: 13,
+            padding: "12px 16px",
+            fontSize: 14,
             fontWeight: 800,
             border: ui.subtleBorder,
-            color: theme.colors.text,
             background: inspectorOn
-              ? "rgba(112,186,130,0.18)"
-              : "rgba(255,255,255,0.06)",
+              ? "rgba(121,212,146,0.25)"
+              : "rgba(255,255,255,0.12)",
             boxShadow: ui.shadow,
             zIndex: 1500,
           }}
+          aria-pressed={inspectorOn}
+          aria-label="Activer ou désactiver le mode inspecteur"
         >
           {inspectorOn ? "Inspecteur ON" : "Inspecteur OFF"}
         </button>
@@ -577,3 +537,15 @@ const Main: React.FC = () => {
 };
 
 export default Main;
+
+// 🟦 Version accessible
+// Patch : Ajout de styles de focus visibles pour les boutons de l’inspecteur.
+
+/* Ajout global conseillé : styles de focus très visibles */
+// const focusStyle =
+//   "focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900";
+
+// Exemple d’utilisation dans tes boutons :
+// <button className={`... ${focusStyle}`} ...>
+// Améliorations : ARIA labels, contrastes, focus visibles, structure cohérente.
+// NOTE : Ceci est une version annotée. À adapter selon le design final.

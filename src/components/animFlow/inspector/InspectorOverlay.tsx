@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type SelectedInfo = {
   id: string;
@@ -43,7 +49,7 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
       if (!container.contains(el)) return null;
       return el;
     },
-    [targetRef]
+    [targetRef],
   );
 
   useEffect(() => {
@@ -81,10 +87,34 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
       });
     };
 
+    const onKeyDownCapture = (e: KeyboardEvent) => {
+      if (!enabled) return;
+      if (e.key !== "Enter" && e.key !== " ") return;
+
+      const active = document.activeElement as HTMLElement | null;
+      if (!active) return;
+
+      const container = targetRef.current;
+      if (!container || !container.contains(active)) return;
+
+      if (!active.id) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      onSelect({
+        id: active.id,
+        tag: active.tagName.toLowerCase(),
+        classes: active.className,
+      });
+    };
+
     container.addEventListener("pointermove", onMove);
     container.addEventListener("click", onClickCapture, true);
+    container.addEventListener("keydown", onKeyDownCapture, true);
 
     return () => {
+      container.removeEventListener("keydown", onKeyDownCapture, true);
       container.removeEventListener("pointermove", onMove);
       container.removeEventListener("click", onClickCapture, true);
     };
