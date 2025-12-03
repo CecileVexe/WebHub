@@ -1,6 +1,6 @@
 import type { EffectConfig, TriggerType } from "../types/effects";
 
-type CleanupFn = () => void;
+export type CleanupFn = () => void;
 
 function runEffect(el: HTMLElement, eff: EffectConfig): void {
   switch (eff.type) {
@@ -31,12 +31,11 @@ function runEffect(el: HTMLElement, eff: EffectConfig): void {
     }
     default: {
       const _exhaustive: never = eff;
-      throw new Error(`Unknown effect: ${_exhaustive}`);
+      throw new Error(`Unknown effect: ${String(_exhaustive)}`);
     }
   }
 }
 
-/** Attache le trigger à l’élément et renvoie le cleanup */
 function attachTrigger(
   el: HTMLElement,
   trigger: TriggerType,
@@ -58,7 +57,6 @@ function attachTrigger(
   }
 
   if (trigger === "change") {
-    // pour inputs/select/textarea : change + input
     const onInput = handler;
     el.addEventListener("change", handler);
     el.addEventListener("input", onInput);
@@ -68,7 +66,6 @@ function attachTrigger(
     };
   }
 
-  // trigger scroll : on exécute une fois quand l’élément entre dans le viewport
   if (trigger === "scroll") {
     let done = false;
 
@@ -83,15 +80,13 @@ function attachTrigger(
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    // check initial
     onScroll();
 
     return () => window.removeEventListener("scroll", onScroll);
   }
 
-  // exhaustive
   const _never: never = trigger;
-  throw new Error(`Unknown trigger: ${_never}`);
+  throw new Error(`Unknown trigger: ${String(_never)}`);
 }
 
 export function applyEffectsToElement(
@@ -103,7 +98,6 @@ export function applyEffectsToElement(
   for (const eff of effects) {
     if (!eff.enabled) continue;
 
-    // sauvegarde état initial pour revert au cleanup
     const prev = {
       opacity: el.style.opacity,
       filter: el.style.filter,
@@ -117,6 +111,7 @@ export function applyEffectsToElement(
     const cleanupTrigger = attachTrigger(el, eff.trigger, apply);
     cleanups.push(cleanupTrigger);
 
+    // restore styles
     cleanups.push(() => {
       el.style.opacity = prev.opacity;
       el.style.filter = prev.filter;

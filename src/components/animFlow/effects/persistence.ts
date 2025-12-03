@@ -1,6 +1,6 @@
 import type { EffectsRegistry, EffectConfig, EffectType } from "../types/effects";
 
-const STORAGE_KEY = "noCodeEffectsRegistry_v2"; // ✅ on bump la clé pour repartir propre
+const STORAGE_KEY = "noCodeEffectsRegistry_v2";
 
 const allowedTypes: ReadonlySet<EffectType> = new Set([
   "fade",
@@ -20,8 +20,11 @@ const ensureIdsAndFilter = (reg: EffectsRegistry): EffectsRegistry => {
       if (!raw || typeof raw !== "object") continue;
 
       const maybeType = (raw as { type?: unknown }).type;
-      if (typeof maybeType !== "string" || !allowedTypes.has(maybeType as EffectType)) {
-        continue; // ✅ on skip les anciens effets
+      if (
+        typeof maybeType !== "string" ||
+        !allowedTypes.has(maybeType as EffectType)
+      ) {
+        continue;
       }
 
       const maybeId = (raw as { effectId?: unknown }).effectId;
@@ -34,7 +37,7 @@ const ensureIdsAndFilter = (reg: EffectsRegistry): EffectsRegistry => {
     }
 
     if (cleaned.length > 0) {
-      // ✅ 1 seul effet max -> garde le dernier
+      // on garde 1 seul effet comme dans ton UX
       next[elId] = [cleaned[cleaned.length - 1]];
     }
   }

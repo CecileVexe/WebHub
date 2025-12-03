@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 type SelectedInfo = {
   id: string;
@@ -18,6 +18,7 @@ type Theme = {
 
 interface InspectorOverlayProps {
   targetRef: React.RefObject<HTMLElement | null>;
+  canvasHostRef: React.RefObject<HTMLDivElement | null>;
   enabled: boolean;
   onSelect: (info: SelectedInfo) => void;
   theme: Theme;
@@ -25,6 +26,7 @@ interface InspectorOverlayProps {
 
 export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
   targetRef,
+  canvasHostRef,
   enabled,
   onSelect,
   theme,
@@ -34,17 +36,33 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
 
   const lastElRef = useRef<HTMLElement | null>(null);
 
-  const getElementUnderPointer = useCallback(
-    (x: number, y: number) => {
-      const el = document.elementFromPoint(x, y) as HTMLElement | null;
-      if (!el) return null;
-      const container = targetRef.current;
-      if (!container) return null;
-      if (!container.contains(el)) return null;
-      return el;
-    },
-    [targetRef]
-  );
+  const getInnerShadowTarget = (
+    path: EventTarget[],
+    canvasHost: HTMLElement
+  ): HTMLElement | null => {
+    const hostIndex = path.findIndex((p) => p === canvasHost);
+    if (hostIndex <= 0) return null;
+
+    for (let i = hostIndex - 1; i >= 0; i--) {
+      const node = path[i];
+      if (node instanceof HTMLElement && node !== canvasHost) {
+        return node;
+      }
+    }
+    return null;
+  };
+
+  const getLightDomTarget = (
+    path: EventTarget[],
+    container: HTMLElement
+  ): HTMLElement | null => {
+    for (const node of path) {
+      if (node instanceof HTMLElement && container.contains(node)) {
+        return node;
+      }
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (!enabled) {
@@ -58,7 +76,15 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
     if (!container) return;
 
     const onMove = (e: PointerEvent) => {
-      const el = getElementUnderPointer(e.clientX, e.clientY);
+      const path = e.composedPath();
+      const canvasHost = canvasHostRef.current;
+
+      const el =
+        canvasHost
+          ? getInnerShadowTarget(path, canvasHost) ??
+            getLightDomTarget(path, container)
+          : getLightDomTarget(path, container);
+
       if (!el || el === lastElRef.current) return;
 
       lastElRef.current = el;
@@ -67,13 +93,22 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
     };
 
     const onClickCapture = (e: MouseEvent) => {
-      const el = getElementUnderPointer(e.clientX, e.clientY);
+      const path = e.composedPath();
+      const canvasHost = canvasHostRef.current;
+
+      const el =
+        canvasHost
+          ? getInnerShadowTarget(path, canvasHost) ??
+            getLightDomTarget(path, container)
+          : getLightDomTarget(path, container);
+
       if (!el) return;
 
       e.preventDefault();
       e.stopPropagation();
 
       if (!el.id) return;
+
       onSelect({
         id: el.id,
         tag: el.tagName.toLowerCase(),
@@ -88,7 +123,7 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
       container.removeEventListener("pointermove", onMove);
       container.removeEventListener("click", onClickCapture, true);
     };
-  }, [enabled, getElementUnderPointer, onSelect, targetRef]);
+  }, [enabled, onSelect, targetRef, canvasHostRef]);
 
   const overlayStyle = useMemo<React.CSSProperties>(() => {
     if (!hoverRect) return { display: "none" };
@@ -100,7 +135,8 @@ export const InspectorOverlay: React.FC<InspectorOverlayProps> = ({
       height: hoverRect.height,
       outline: `2px solid ${theme.colors.accent}`,
       background: "rgba(67,106,211,0.12)",
-      boxShadow: `0 0 0 1px rgba(67,106,211,0.35), 0 0 18px rgba(67,106,211,0.35)`,
+      boxShadow:
+        "0 0 0 1px rgba(67,106,211,0.35), 0 0 18px rgba(67,106,211,0.35)",
       pointerEvents: "none",
       zIndex: 9999,
       borderRadius: 6,

@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Canvas } from "./canva/Canva";
 import { InspectorOverlay } from "./inspector/InspectorOverlay";
-import type { EffectsRegistry, EffectConfig } from "./types/effects";
 import { useEffectsEngine } from "./effects/useEffectEngine";
 import { loadRegistry, saveRegistry } from "./effects/persistence";
+import type { CanvasFiles } from "./types/canva";
+import type { EffectsRegistry, EffectConfig } from "./types/effects";
 
 // --------------------
 // Theme (ta charte)
@@ -27,27 +29,18 @@ const ui = {
   textMuted: "rgba(248,225,226,0.7)",
 };
 
-// Placeholder : ton TSX généré non modifiable
-const GeneratedScene: React.FC = () => {
-  return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <button id="btn-1">Bouton A</button>
-      <div id="box-1" style={{ padding: 16, border: "1px dashed #555" }}>
-        Box
-      </div>
-    </div>
-  );
-};
-
-const createEffectId = (): string => {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `eff_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-};
-
 const Main: React.FC = () => {
   const targetRef = useRef<HTMLDivElement | null>(null);
+  const canvasHostRef = useRef<HTMLDivElement | null>(null);
+
+  const createEffectId = (): string => {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return crypto.randomUUID();
+    }
+    return `eff_${Date.now()}_${Math.random()
+      .toString(16)
+      .slice(2)}`;
+  };
 
   const [newTrigger, setNewTrigger] =
     useState<EffectConfig["trigger"]>("click");
@@ -64,17 +57,22 @@ const Main: React.FC = () => {
 
   const [previewOn, setPreviewOn] = useState(false);
 
-  // ✅ nouveau : type d’effet sélectionné dans le dropdown
   const [newEffectType, setNewEffectType] =
     useState<EffectConfig["type"]>("fade");
 
+  const [canvasFiles, setCanvasFiles] = useState<CanvasFiles>({
+    html: null,
+    cssUrl: null,
+    jsUrl: null,
+  });
+
   const showSidebar = inspectorOn && selectedId !== null;
 
-  // applique draft ou saved selon preview
   const activeRegistry = previewOn ? draftRegistry : savedRegistry;
-  useEffectsEngine(activeRegistry);
 
-  // persist uniquement saved
+  // ✅ shadow-aware
+  useEffectsEngine(activeRegistry, canvasHostRef);
+
   useEffect(() => {
     saveRegistry(savedRegistry);
   }, [savedRegistry]);
@@ -110,8 +108,7 @@ const Main: React.FC = () => {
 
     setDraftRegistry((prev) => ({
       ...prev,
-      // ✅ un seul effet par élément
-      [selectedId]: [effect],
+      [selectedId]: [effect], // 1 seul effet
     }));
   };
 
@@ -135,6 +132,51 @@ const Main: React.FC = () => {
   const commitDraftToSaved = () => {
     setSavedRegistry(draftRegistry);
     setPreviewOn(false);
+  };
+
+  const readFileText = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ""));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file);
+    });
+
+  const makeBlobUrl = (content: string, mime: string): string => {
+    const blob = new Blob([content], { type: mime });
+    return URL.createObjectURL(blob);
+  };
+
+  const onImportFolder = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): Promise<void> => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+
+    const htmlFile =
+      files.find((f) => f.name.toLowerCase().endsWith(".html")) ?? null;
+    const cssFile =
+      files.find((f) => f.name.toLowerCase().endsWith(".css")) ?? null;
+    const jsFile =
+      files.find((f) => f.name.toLowerCase().endsWith(".js")) ?? null;
+
+    const [html, cssText, jsText] = await Promise.all([
+      htmlFile ? readFileText(htmlFile) : Promise.resolve(null),
+      cssFile ? readFileText(cssFile) : Promise.resolve(null),
+      jsFile ? readFileText(jsFile) : Promise.resolve(null),
+    ]);
+
+    setCanvasFiles((prev: CanvasFiles) => {
+      if (prev.cssUrl) URL.revokeObjectURL(prev.cssUrl);
+      if (prev.jsUrl) URL.revokeObjectURL(prev.jsUrl);
+      return prev;
+    });
+
+    const cssUrl = cssText ? makeBlobUrl(cssText, "text/css") : null;
+    const jsUrl = jsText ? makeBlobUrl(jsText, "text/javascript") : null;
+
+    setCanvasFiles({ html, cssUrl, jsUrl });
+    e.target.value = "";
   };
 
   const effectLabel: Record<EffectConfig["type"], string> = {
@@ -264,144 +306,198 @@ const Main: React.FC = () => {
     outline: "none",
   };
 
-  // -----------------------------
   return (
-    <div style={rootStyle}>
-      {/* Canvas */}
-      <div ref={targetRef} style={canvasStyle}>
-        <div style={canvasInnerStyle}>
-          <GeneratedScene />
-        </div>
+    <>
+      {/* Import bloc */}
+      <div
+        style={{
+          ...sectionStyle,
+          display: "grid",
+          gap: 8,
+          width: "100%",
+          height: "auto",
+        }}
+      >
+        <div style={{ fontWeight: 700, fontSize: 13 }}>Importer une scène</div>
 
-        <InspectorOverlay
-          targetRef={targetRef}
-          enabled={inspectorOn}
-          onSelect={(info) => setSelectedId(info.id)}
-          theme={theme}
-        />
+        <label
+          style={{
+            ...buttonBase,
+            textAlign: "center",
+            cursor: "pointer",
+            background: "rgba(255,255,255,0.06)",
+          }}
+        >
+          Importer un dossier
+          <input
+            type="file"
+            // @ts-expect-error webkitdirectory existe côté Chromium
+            webkitdirectory="true"
+            directory=""
+            multiple
+            onChange={onImportFolder}
+            style={{ display: "none" }}
+            accept=".html,.css,.js"
+          />
+        </label>
+
+        <div style={{ fontSize: 12, color: ui.textMuted }}>
+          Le dossier doit contenir un fichier .html, .css et/ou .js.
+        </div>
       </div>
 
-      {/* Sidebar No-Code */}
-      <aside style={drawerStyle}>
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: 999,
-              background: inspectorOn
-                ? theme.colors.primary
-                : "rgba(248,225,226,0.25)",
-              boxShadow: inspectorOn
-                ? `0 0 10px ${theme.colors.primary}`
-                : undefined,
-            }}
-          />
-          <div style={{ fontWeight: 800, letterSpacing: 0.3 }}>
-            No-Code Animator
-          </div>
-        </div>
-
-        <div style={{ marginTop: 8, fontSize: 12, color: ui.textMuted }}>
-          Inspecteur actif &nbsp;•&nbsp; sélection requise
-        </div>
-
-        <hr style={hrStyle} />
-
-        {/* Inspecteur toggle */}
-        <div style={sectionStyle}>
-          <label
-            style={{
-              display: "flex",
-              gap: 8,
-              alignItems: "center",
-              fontSize: 13,
-              fontWeight: 600,
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={inspectorOn}
-              onChange={(e) => {
-                const next = e.target.checked;
-                setInspectorOn(next);
-                if (!next) {
-                  setSelectedId(null);
-                  setPreviewOn(false);
+      <div style={rootStyle}>
+        {/* Canvas */}
+        <div ref={targetRef} style={canvasStyle}>
+          <div style={{ ...canvasInnerStyle, padding: 0 }}>
+            <div
+              style={{
+                height: "100%",
+                width: "100%",
+                minHeight: 400,
+                padding: 18,
+              }}
+            >
+              <Canvas
+                hostRef={canvasHostRef}
+                html={canvasFiles.html}
+                cssUrl={canvasFiles.cssUrl}
+                jsUrl={canvasFiles.jsUrl}
+                placeholder={
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontWeight: 700 }}>Canvas vide</div>
+                    <div style={{ fontSize: 12, opacity: 0.7 }}>
+                      Importe un dossier contenant .html/.css/.js
+                    </div>
+                  </div>
                 }
+              />
+            </div>
+          </div>
+
+          <InspectorOverlay
+            targetRef={targetRef}
+            canvasHostRef={canvasHostRef}
+            enabled={inspectorOn}
+            onSelect={(info) => setSelectedId(info.id)}
+            theme={theme}
+          />
+        </div>
+
+        {/* Sidebar No-Code */}
+        <aside style={drawerStyle}>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 999,
+                background: inspectorOn
+                  ? theme.colors.primary
+                  : "rgba(248,225,226,0.25)",
+                boxShadow: inspectorOn
+                  ? `0 0 10px ${theme.colors.primary}`
+                  : undefined,
               }}
             />
-            Mode inspecteur
-          </label>
-
-          <div style={{ marginTop: 8 }}>
-            <span style={chipStyle}>
-              Sélection :{" "}
-              {selectedId ? (
-                <code style={{ color: theme.colors.text }}>#{selectedId}</code>
-              ) : (
-                "aucune"
-              )}
-            </span>
+            <div style={{ fontWeight: 800, letterSpacing: 0.3 }}>
+              No-Code Animator
+            </div>
           </div>
-        </div>
 
-        <hr style={hrStyle} />
+          <div style={{ marginTop: 8, fontSize: 12, color: ui.textMuted }}>
+            Inspecteur actif • sélection requise
+          </div>
 
-        {/* Preview / commit */}
-        <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
-          <button
-            onClick={() => setPreviewOn((v) => !v)}
-            style={previewOn ? accentBtn : secondaryBtn}
-          >
-            {previewOn ? "Quitter la prévisualisation" : "Prévisualiser"}
-          </button>
+          <hr style={hrStyle} />
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <button
-              onClick={resetDraftFromSaved}
-              disabled={previewOn}
+          {/* Inspecteur toggle */}
+          <div style={sectionStyle}>
+            <label
               style={{
-                ...buttonBase,
-                ...(previewOn ? disabledBtn : null),
-                flex: 1,
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+                fontSize: 13,
+                fontWeight: 600,
               }}
             >
-              Annuler
-            </button>
+              <input
+                type="checkbox"
+                checked={inspectorOn}
+                onChange={(e) => {
+                  const next = e.target.checked;
+                  setInspectorOn(next);
+                  if (!next) {
+                    setSelectedId(null);
+                    setPreviewOn(false);
+                  }
+                }}
+              />
+              Mode inspecteur
+            </label>
 
-            <button
-              onClick={commitDraftToSaved}
-              disabled={!previewOn}
-              style={{
-                ...primaryBtn,
-                ...(!previewOn ? disabledBtn : null),
-                flex: 1,
-              }}
-            >
-              Valider
-            </button>
+            <div style={{ marginTop: 8 }}>
+              <span style={chipStyle}>
+                Sélection :{" "}
+                {selectedId ? (
+                  <code style={{ color: theme.colors.text }}>
+                    #{selectedId}
+                  </code>
+                ) : (
+                  "aucune"
+                )}
+              </span>
+            </div>
           </div>
 
-          <div style={{ fontSize: 12, color: ui.textMuted }}>
-            Mode actif : {previewOn ? "Draft (preview)" : "Saved (prod)"}
-          </div>
-        </div>
+          <hr style={hrStyle} />
 
-        <hr style={hrStyle} />
-
-        <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
-          <div style={{ fontSize: 12, color: ui.textMuted }}>
-            Cet ajout remplace l’effet existant pour cet élément.
-          </div>
-
+          {/* Preview / commit */}
           <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
-            <div style={{ fontWeight: 700, fontSize: 13 }}>
-              Ajouter un effet
+            <button
+              onClick={() => setPreviewOn((v) => !v)}
+              style={previewOn ? accentBtn : secondaryBtn}
+            >
+              {previewOn ? "Quitter la prévisualisation" : "Prévisualiser"}
+            </button>
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                onClick={resetDraftFromSaved}
+                disabled={previewOn}
+                style={{
+                  ...buttonBase,
+                  ...(previewOn ? disabledBtn : null),
+                  flex: 1,
+                }}
+              >
+                Annuler
+              </button>
+
+              <button
+                onClick={commitDraftToSaved}
+                disabled={!previewOn}
+                style={{
+                  ...primaryBtn,
+                  ...(!previewOn ? disabledBtn : null),
+                  flex: 1,
+                }}
+              >
+                Valider
+              </button>
             </div>
 
-            {/* 1) Trigger */}
+            <div style={{ fontSize: 12, color: ui.textMuted }}>
+              Mode actif : {previewOn ? "Draft (preview)" : "Saved (prod)"}
+            </div>
+          </div>
+
+          <hr style={hrStyle} />
+
+          {/* Add effect */}
+          <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
             <select
               value={newTrigger}
               disabled={!selectedId}
@@ -421,7 +517,6 @@ const Main: React.FC = () => {
               <option value="change">Change</option>
             </select>
 
-            {/* 2) Effect */}
             <select
               value={newEffectType}
               disabled={!selectedId}
@@ -456,123 +551,116 @@ const Main: React.FC = () => {
               Choisis d’abord un événement, puis un effet.
             </div>
           </div>
-        </div>
 
-        <hr style={hrStyle} />
+          <hr style={hrStyle} />
 
-        {/* Effects list */}
-        <div style={{ ...sectionStyle, overflow: "auto", maxHeight: "48vh" }}>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: 13,
-              marginBottom: 8,
-            }}
-          >
-            Effets (draft)
-          </div>
-
-          {selectedId && selectedEffects.length === 0 && (
-            <div style={{ fontSize: 12, color: ui.textMuted }}>
-              Aucun effet pour cet élément.
+          {/* Effects list */}
+          <div style={{ ...sectionStyle, overflow: "auto", maxHeight: "48vh" }}>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: 13,
+                marginBottom: 8,
+              }}
+            >
+              Effets (draft)
             </div>
-          )}
 
-          {selectedId &&
-            selectedEffects.map((eff) => (
-              <div
-                key={eff.effectId}
-                style={{
-                  border: ui.subtleBorder,
-                  background: "rgba(255,255,255,0.03)",
-                  borderRadius: ui.radiusSm,
-                  padding: "8px 8px",
-                  marginBottom: 8,
-                  display: "grid",
-                  gap: 6,
-                }}
-              >
+            {selectedId && selectedEffects.length === 0 && (
+              <div style={{ fontSize: 12, color: ui.textMuted }}>
+                Aucun effet pour cet élément.
+              </div>
+            )}
+
+            {selectedId &&
+              selectedEffects.map((eff) => (
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  key={eff.effectId}
+                  style={{
+                    border: ui.subtleBorder,
+                    background: "rgba(255,255,255,0.03)",
+                    borderRadius: ui.radiusSm,
+                    padding: "8px 8px",
+                    marginBottom: 8,
+                    display: "grid",
+                    gap: 6,
+                  }}
                 >
-                  <div style={{ fontSize: 12 }}>
-                    <code style={{ color: theme.colors.accent }}>
-                      {effectLabel[eff.type]}
-                    </code>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <div style={{ fontSize: 12 }}>
+                      <code style={{ color: theme.colors.accent }}>
+                        {effectLabel[eff.type]}
+                      </code>
+                    </div>
 
-                    {/* {"className" in eff ? (
-                      <span style={{ color: ui.textMuted }}>
-                        {" "}
-                        → {eff.className}
-                      </span>
-                    ) : null} */}
+                    <button
+                      onClick={() =>
+                        selectedId &&
+                        removeEffectFromDraft(selectedId, eff.effectId)
+                      }
+                      style={{
+                        ...buttonBase,
+                        padding: "4px 8px",
+                        fontSize: 12,
+                        background: "rgba(255,255,255,0.02)",
+                      }}
+                    >
+                      Supprimer
+                    </button>
                   </div>
 
-                  <button
-                    onClick={() =>
-                      selectedId &&
-                      removeEffectFromDraft(selectedId, eff.effectId)
-                    }
-                    style={{
-                      ...buttonBase,
-                      padding: "4px 8px",
-                      fontSize: 12,
-                      background: "rgba(255,255,255,0.02)",
-                    }}
-                  >
-                    Supprimer
-                  </button>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <span style={chipStyle}>
+                      id: {eff.effectId.slice(0, 6)}…
+                    </span>
+                    <span style={chipStyle}>
+                      {eff.enabled ? "activé" : "désactivé"}
+                    </span>
+                  </div>
                 </div>
+              ))}
+          </div>
 
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  <span style={chipStyle}>id: {eff.effectId.slice(0, 6)}…</span>
-                  <span style={chipStyle}>
-                    {eff.enabled ? "activé" : "désactivé"}
-                  </span>
-                </div>
-              </div>
-            ))}
-        </div>
+          <hr style={hrStyle} />
 
-        <hr style={hrStyle} />
+          <button
+            onClick={() => {
+              setSelectedId(null);
+              setPreviewOn(false);
+            }}
+            style={buttonBase}
+          >
+            Désélectionner
+          </button>
+        </aside>
 
-        {/* Deselect */}
-        <button
-          onClick={() => {
-            setSelectedId(null);
-            setPreviewOn(false);
-          }}
-          style={buttonBase}
-        >
-          Désélectionner
-        </button>
-      </aside>
-
-      {/* Bouton flottant inspecteur si sidebar fermée */}
-      {!showSidebar && (
-        <button
-          onClick={() => setInspectorOn((v) => !v)}
-          style={{
-            position: "fixed",
-            bottom: 16,
-            right: 16,
-            borderRadius: 999,
-            padding: "10px 14px",
-            fontSize: 13,
-            fontWeight: 800,
-            border: ui.subtleBorder,
-            color: theme.colors.text,
-            background: inspectorOn
-              ? "rgba(112,186,130,0.18)"
-              : "rgba(255,255,255,0.06)",
-            boxShadow: ui.shadow,
-            zIndex: 1500,
-          }}
-        >
-          {inspectorOn ? "Inspecteur ON" : "Inspecteur OFF"}
-        </button>
-      )}
-    </div>
+        {!showSidebar && (
+          <button
+            onClick={() => setInspectorOn((v) => !v)}
+            style={{
+              position: "fixed",
+              bottom: 16,
+              right: 16,
+              borderRadius: 999,
+              padding: "10px 14px",
+              fontSize: 13,
+              fontWeight: 800,
+              border: ui.subtleBorder,
+              color: theme.colors.text,
+              background: inspectorOn
+                ? "rgba(112,186,130,0.18)"
+                : "rgba(255,255,255,0.06)",
+              boxShadow: ui.shadow,
+              zIndex: 1500,
+            }}
+          >
+            {inspectorOn ? "Inspecteur ON" : "Inspecteur OFF"}
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 
