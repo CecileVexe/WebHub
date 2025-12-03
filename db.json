@@ -1,0 +1,13 @@
+{
+  "projects": [
+    {
+      "id": 1,
+      "title": "Test",
+      "description": "Desc",
+      "category": "Demo",
+      "imageUrl": "",
+      "tags": ["React"],
+      "color": "purple"
+    }
+  ]
+}
