@@ -1,14 +1,13 @@
 {
   "projects": [
     {
-      "id": "1",
-      "title": "Projet 1",
-      "description": "Mon premier projet"
-    },
-    {
-      "id": "2858",
-      "title": "toto",
-      "description": "toto est content"
+      "id": 1,
+      "title": "Test",
+      "description": "Desc",
+      "category": "Demo",
+      "imageUrl": "",
+      "tags": ["React"],
+      "color": "purple"
     }
   ]
 }

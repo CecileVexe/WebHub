@@ -1,13 +1,18 @@
 export type Project = {
   id: number;
   title: string;
-  description?: string;
+  description: string;
+  category: string;
+  imageUrl: string;
+  tags: string[];
+  color: "purple" | "pink" | "orange";
 };
 
 export type CreateProjectInput = Omit<Project, "id">;
 export type UpdateProjectPatch = Partial<Omit<Project, "id">>;
 
 const BASE_URL = "http://localhost:3001/projects";
+
 
 async function assertOk(res: Response, context: string) {
   if (!res.ok) {
