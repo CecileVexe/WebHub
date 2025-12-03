@@ -117,7 +117,7 @@ export default function Projects() {
     }
   };
 
-  const onDelete = async (id: number) => {
+  const onDelete = async (id: string) => {
     if (!window.confirm("Supprimer ce projet ?")) return;
 
     setError(null);

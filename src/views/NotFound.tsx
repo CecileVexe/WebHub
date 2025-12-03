@@ -5,21 +5,31 @@ const NotFound: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="not-found">
+    <main className="not-found" role="main">
       <div className="not-found-content">
-        <h1 className="error-code">404</h1>
-        <h2>Page non trouvée</h2>
+        <p className="error-code" aria-label="Erreur 404">404</p>
+        <h1>Page non trouvée</h1>
         <p>Désolé, la page que vous recherchez n'existe pas.</p>
-        <div className="not-found-actions">
-          <button onClick={() => navigate('/')} className="primary-button">
+        <nav className="not-found-actions" aria-label="Actions de navigation">
+          <button 
+            type="button"
+            onClick={() => navigate('/')} 
+            className="primary-button"
+            aria-label="Retourner à la page d'accueil"
+          >
             Retour à l'accueil
           </button>
-          <button onClick={() => navigate(-1)} className="secondary-button">
+          <button 
+            type="button"
+            onClick={() => navigate(-1)} 
+            className="secondary-button"
+            aria-label="Revenir à la page précédente"
+          >
             Page précédente
           </button>
-        </div>
+        </nav>
       </div>
-    </div>
+    </main>
   );
 };
 
