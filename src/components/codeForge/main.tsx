@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { importJson } from "./utils/importJson.ts";
 import { exportToZip } from "./utils/generate.ts";
 
-const main = () => {
+const MainComponent = () => {
   const [jsonData, setJsonData] = useState<any[]>([]);
 
   const handleImport = async () => {
@@ -60,8 +61,7 @@ const main = () => {
       )}
       </div>
     </div>
-    
   </>;
 };
 
-export default main;
+export default MainComponent;
