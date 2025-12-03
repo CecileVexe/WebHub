@@ -31,25 +31,28 @@ const main = () => {
   };
 
   return <>
-    <h1>CodeForge</h1>
-    <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-      <button onClick={handleImport}>Importer un fichier JSON</button>
-      <button 
-        onClick={handleExport}
-        disabled={jsonData.length === 0}
-        style={{ 
-          opacity: jsonData.length === 0 ? 0.5 : 1,
-          cursor: jsonData.length === 0 ? "not-allowed" : "pointer"
-        }}
-      >
-        Exporter en ZIP
-      </button>
-    </div>
-    {jsonData.length > 0 && (
-      <div style={{ padding: "10px", backgroundColor: "#f0f0f0", borderRadius: "5px" }}>
-        <p><strong>Données chargées:</strong> {jsonData.length} élément(s)</p>
+    <div className="codeforge-page">
+      <h1>CodeForge</h1>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "20px"}}>
+        <button onClick={handleImport}>Importer un fichier JSON</button>
+        <button 
+          onClick={handleExport}
+          disabled={jsonData.length === 0}
+          style={{ 
+            opacity: jsonData.length === 0 ? 0.5 : 1,
+            cursor: jsonData.length === 0 ? "not-allowed" : "pointer"
+          }}
+        >
+          Exporter en ZIP
+        </button>
       </div>
-    )}
+      {jsonData.length > 0 && (
+        <div style={{ padding: "10px", backgroundColor: "#f0f0f0", borderRadius: "5px" }}>
+          <p><strong>Données chargées:</strong> {jsonData.length} élément(s)</p>
+        </div>
+      )}
+    </div>
+    
   </>;
 };
 

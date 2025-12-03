@@ -1,16 +1,13 @@
 import { BrowserRouter } from 'react-router-dom';
-import Navigation from './components/Navigation.tsx';
 import { AppRouter } from './router';
+import './App.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <div style={{ display: 'flex', minHeight: '100vh' }}>
-        <Navigation />
-        <main style={{ flex: 1 }}>
-          <AppRouter />
-        </main>
-      </div>
+      <main className="app-content">
+        <AppRouter />
+      </main>
     </BrowserRouter>
   );
 }
