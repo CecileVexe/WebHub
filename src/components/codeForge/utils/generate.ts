@@ -6,7 +6,7 @@ import JSZip from 'jszip';
  * @param {Array} elementsData - Le tableau d'objets JSON contenant les éléments
  * @returns {Promise<void>}
  */
-export async function generateAndDownloadZip(elementsData: any[]) {
+export async function exportToZip(elementsData: any[]) {
   try {
     const css = generateCSS(elementsData);
 
