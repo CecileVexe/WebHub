@@ -2,16 +2,7 @@ import { ExternalLink, Tag, Heart } from "lucide-react";
 import { useState } from "react";
 import { ImageWithFallback } from "../global/ImageWithFallback";
 import { NavLink } from "react-router-dom";
-
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  imageUrl: string;
-  tags: string[];
-  color: "purple" | "pink" | "orange";
-}
+import type { Project } from "../../api/projects";
 
 interface ProjectCardProps {
   project: Project;

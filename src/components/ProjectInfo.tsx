@@ -1,4 +1,4 @@
-import type { Project } from '../types/Project';
+import type { Project } from '../api/projects';
 import '../styles/Sidebar.css';
 
 interface ProjectInfoProps {

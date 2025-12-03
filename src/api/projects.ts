@@ -1,5 +1,5 @@
 export type Project = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   category: string;
@@ -37,7 +37,7 @@ export async function createProject(project: CreateProjectInput): Promise<Projec
   return res.json() as Promise<Project>;
 }
 
-export async function updateProject(id: number, patch: UpdateProjectPatch): Promise<Project> {
+export async function updateProject(id: string, patch: UpdateProjectPatch): Promise<Project> {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -47,7 +47,7 @@ export async function updateProject(id: number, patch: UpdateProjectPatch): Prom
   return res.json() as Promise<Project>;
 }
 
-export async function deleteProject(id: number): Promise<void> {
+export async function deleteProject(id: string): Promise<void> {
   const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
   await assertOk(res, "Erreur deleteProject");
 }
