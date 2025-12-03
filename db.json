@@ -1,0 +1,48 @@
+{
+  "projects": [
+    {
+      "id": "1",
+      "title": "Test",
+      "description": "Desc",
+      "category": "Demo",
+      "imageUrl": "",
+      "tags": [
+        "React"
+      ],
+      "color": "purple"
+    },
+    {
+      "id": "c0cd",
+      "title": "Toto fait du skate",
+      "description": "Toto est content de faire du skate dans l'école",
+      "category": "Vie de campus",
+      "imageUrl": "https://m.media-amazon.com/images/I/819zWqfSFjL.jpg",
+      "tags": [
+        "toto"
+      ],
+      "color": "purple"
+    },
+    {
+      "id": "0249",
+      "title": "Toto fait de la fraude fiscale",
+      "description": "Toto veut faire de l'argent",
+      "category": "Argent",
+      "imageUrl": "https://m.media-amazon.com/images/I/81gDv3BIdvL.jpg",
+      "tags": [
+        "React"
+      ],
+      "color": "orange"
+    },
+    {
+      "id": "1829",
+      "title": "test",
+      "description": "test",
+      "category": "test",
+      "imageUrl": "",
+      "tags": [
+        "test"
+      ],
+      "color": "purple"
+    }
+  ]
+}
