@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { importJson } from "./utils/importJson.ts";
 import { exportToZip } from "./utils/generate.ts";
+import { importJson } from "./utils/importJson.ts";
 
 const main = () => {
   const [jsonData, setJsonData] = useState<any[]>([]);
