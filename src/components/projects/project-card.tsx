@@ -1,6 +1,7 @@
 import { ExternalLink, Tag, Heart } from "lucide-react";
 import { useState } from "react";
 import { ImageWithFallback } from "../global/ImageWithFallback";
+import { NavLink } from "react-router-dom";
 
 interface Project {
   id: number;
@@ -125,13 +126,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
     </div>
 
     {/* Action Button */}
-    <button
+    <NavLink to={`/projects/${project.id}`}
       className={`w-full ${colors.button} text-white py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600`}
       aria-label={`Explorer le projet ${project.title}`}
     >
       <span>Explorer le projet</span>
       <ExternalLink className="w-4 h-4" aria-hidden="true" />
-    </button>
+    </NavLink>
   </div>
 </div>
 
