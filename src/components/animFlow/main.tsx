@@ -49,6 +49,9 @@ const createEffectId = (): string => {
 const Main: React.FC = () => {
   const targetRef = useRef<HTMLDivElement | null>(null);
 
+  const [newTrigger, setNewTrigger] =
+    useState<EffectConfig["trigger"]>("click");
+
   const [inspectorOn, setInspectorOn] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -81,13 +84,17 @@ const Main: React.FC = () => {
     [draftRegistry, selectedId]
   );
 
-  const addEffectToDraft = (type: EffectConfig["type"]) => {
+  const addEffectToDraft = (
+    trigger: EffectConfig["trigger"],
+    type: EffectConfig["type"]
+  ) => {
     if (!selectedId) return;
 
     const base = {
       effectId: createEffectId(),
       enabled: true,
       durationMs: 400,
+      trigger,
     } as const;
 
     const effect: EffectConfig =
@@ -103,7 +110,7 @@ const Main: React.FC = () => {
 
     setDraftRegistry((prev) => ({
       ...prev,
-      // ✅ un seul effet : on remplace
+      // ✅ un seul effet par élément
       [selectedId]: [effect],
     }));
   };
@@ -389,39 +396,65 @@ const Main: React.FC = () => {
             Cet ajout remplace l’effet existant pour cet élément.
           </div>
 
-        <select
-          value={newEffectType}
-          disabled={!selectedId}
-          onChange={(e) =>
-            setNewEffectType(e.target.value as EffectConfig["type"])
-          }
-          style={{
-            ...selectStyle,
-            opacity: selectedId ? 1 : 0.5,
-            cursor: selectedId ? "pointer" : "not-allowed",
-          }}
-        >
-          <option value="fade">Fade</option>
-          <option value="blur">Blur</option>
-          <option value="rotate">Rotate</option>
-          <option value="bgColor">Background Color Change</option>
-          <option value="scale">Scale</option>
-        </select>
+          <div style={{ ...sectionStyle, display: "grid", gap: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>
+              Ajouter un effet
+            </div>
 
+            {/* 1) Trigger */}
+            <select
+              value={newTrigger}
+              disabled={!selectedId}
+              onChange={(e) =>
+                setNewTrigger(e.target.value as EffectConfig["trigger"])
+              }
+              style={{
+                ...selectStyle,
+                opacity: selectedId ? 1 : 0.5,
+                cursor: selectedId ? "pointer" : "not-allowed",
+              }}
+            >
+              <option value="click">Click</option>
+              <option value="hover">Hover</option>
+              <option value="load">Load</option>
+              <option value="scroll">Scroll</option>
+              <option value="change">Change</option>
+            </select>
 
-          <button
-            onClick={() => addEffectToDraft(newEffectType)}
-            disabled={!selectedId}
-            style={{
-              ...buttonBase,
-              ...(!selectedId ? disabledBtn : null),
-            }}
-          >
-            Ajouter
-          </button>
+            {/* 2) Effect */}
+            <select
+              value={newEffectType}
+              disabled={!selectedId}
+              onChange={(e) =>
+                setNewEffectType(e.target.value as EffectConfig["type"])
+              }
+              style={{
+                ...selectStyle,
+                opacity: selectedId ? 1 : 0.5,
+                cursor: selectedId ? "pointer" : "not-allowed",
+              }}
+            >
+              <option value="fade">Fade</option>
+              <option value="blur">Blur</option>
+              <option value="rotate">Rotate</option>
+              <option value="bgColor">Background Color Change</option>
+              <option value="scale">Scale</option>
+            </select>
 
-          <div style={{ fontSize: 12, color: ui.textMuted }}>
-            L’effet est ajouté au brouillon (draft).
+            <button
+              onClick={() => addEffectToDraft(newTrigger, newEffectType)}
+              disabled={!selectedId}
+              style={{
+                ...buttonBase,
+                ...(!selectedId ? disabledBtn : null),
+              }}
+            >
+              Ajouter (remplace l’existant)
+            </button>
+
+            <div style={{ fontSize: 12, color: ui.textMuted }}>
+              Choisis d’abord un événement, puis un effet.
+            </div>
           </div>
         </div>
 

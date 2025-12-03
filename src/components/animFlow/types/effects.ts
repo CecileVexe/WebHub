@@ -1,4 +1,9 @@
-import type React from "react";
+export type TriggerType =
+  | "click"
+  | "hover"
+  | "load"
+  | "scroll"
+  | "change";
 
 export type EffectType =
   | "fade"
@@ -10,42 +15,34 @@ export type EffectType =
 export interface BaseEffect {
   effectId: string;
   type: EffectType;
+  trigger: TriggerType;
   enabled: boolean;
+  durationMs: number;
 }
 
 export interface FadeEffect extends BaseEffect {
   type: "fade";
-  /** opacité cible (0–1) */
-  to: number;
-  durationMs: number;
+  to: number; // 0–1
 }
 
 export interface BlurEffect extends BaseEffect {
   type: "blur";
-  /** flou en px */
   toPx: number;
-  durationMs: number;
 }
 
 export interface RotateEffect extends BaseEffect {
   type: "rotate";
-  /** rotation en degrés */
   toDeg: number;
-  durationMs: number;
 }
 
 export interface BgColorEffect extends BaseEffect {
   type: "bgColor";
-  /** couleur cible */
   toColor: string;
-  durationMs: number;
 }
 
 export interface ScaleEffect extends BaseEffect {
   type: "scale";
-  /** scale cible (ex 1.1) */
   to: number;
-  durationMs: number;
 }
 
 export type EffectConfig =
