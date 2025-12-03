@@ -7,6 +7,7 @@ import './App.css'
 
 function App() {
   return (
+
     <ProjectProvider>
       <Router>
         <Routes>
@@ -17,6 +18,7 @@ function App() {
       </Router>
     </ProjectProvider>
   )
+
 }
 
 export default App;
