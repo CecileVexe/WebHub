@@ -4,7 +4,7 @@ import { generateAndDownloadZip } from "./utils/generate";
 const main = () => {
 
   
-    generateAndDownloadZip(exemple);
+  generateAndDownloadZip(exemple);
  
 
   return <div>main</div>;

@@ -8,10 +8,8 @@ import JSZip from 'jszip';
  */
 export async function generateAndDownloadZip(elementsData: any[]) {
   try {
-    // 1. Générer le CSS
     const css = generateCSS(elementsData);
 
-    // 2. Générer le HTML
     const html = generateHTML(elementsData, css);
 
     console.log("Généré HTML:", html);
