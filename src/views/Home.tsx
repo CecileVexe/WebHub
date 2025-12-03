@@ -72,7 +72,7 @@ export default function App() {
 
   // ✅ Home
   return (
-    <div className="min-h-screen bg-blue-500 from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-grey-500 from-purple-50 via-pink-50 to-orange-50">
   {/* Animated Background Blobs — purely decorative */}
   <div
     className="fixed inset-0 overflow-hidden pointer-events-none"
@@ -159,11 +159,11 @@ export default function App() {
       <div className="text-center mb-12">
         <h2
           id="hero-title"
-          className="bg-white from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-4 text-3xl"
+          className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-4 text-3xl"
         >
           Stunning Web Projects
         </h2>
-        <p className="text-white max-w-2xl mx-auto">
+        <p className="text-grey max-w-2xl mx-auto">
           Explore our curated collection of innovative web applications and beautiful designs
         </p>
       </div>

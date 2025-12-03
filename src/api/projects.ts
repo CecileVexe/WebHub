@@ -13,7 +13,6 @@ export type UpdateProjectPatch = Partial<Omit<Project, "id">>;
 
 const BASE_URL = "http://localhost:3001/projects";
 
-
 async function assertOk(res: Response, context: string) {
   if (!res.ok) {
     const text = await res.text().catch(() => "");
@@ -27,7 +26,9 @@ export async function listProjects(): Promise<Project[]> {
   return res.json() as Promise<Project[]>;
 }
 
-export async function createProject(project: CreateProjectInput): Promise<Project> {
+export async function createProject(
+  project: CreateProjectInput
+): Promise<Project> {
   const res = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,7 +38,10 @@ export async function createProject(project: CreateProjectInput): Promise<Projec
   return res.json() as Promise<Project>;
 }
 
-export async function updateProject(id: string, patch: UpdateProjectPatch): Promise<Project> {
+export async function updateProject(
+  id: string,
+  patch: UpdateProjectPatch
+): Promise<Project> {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
