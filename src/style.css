@@ -1,5 +1,42 @@
 @import "tailwindcss";
 
+:root {
+  /* Primary Colors */
+  --color-primary-purple: #A436FF;
+  --color-primary-pink: #C925C2;
+  --color-primary-magenta: #ED1385;
+  --color-primary-coral: #F63B43;
+  --color-primary-orange: #FF6300;
+  --color-primary-light-orange: #FF7117;
+  --color-background: #2B7FFF;
+  
+  /* Neutral Colors */
+  --color-light: #FEFBFE;
+  --color-dark: #101828;
+  
+  /* Gradient Combinations */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary-purple) 0%, var(--color-primary-pink) 50%, var(--color-primary-magenta) 100%);
+  --gradient-warm: linear-gradient(135deg, var(--color-primary-coral) 0%, var(--color-primary-orange) 50%, var(--color-primary-light-orange) 100%);
+  --gradient-full: linear-gradient(135deg, var(--color-primary-purple) 0%, var(--color-primary-pink) 25%, var(--color-primary-magenta) 50%, var(--color-primary-coral) 75%, var(--color-primary-orange) 100%);
+  
+  /* Neon/Glow Effects */
+  --glow-purple: 0 0 10px var(--color-primary-purple), 0 0 20px var(--color-primary-purple), 0 0 30px var(--color-primary-purple);
+  --glow-pink: 0 0 10px var(--color-primary-pink), 0 0 20px var(--color-primary-pink), 0 0 30px var(--color-primary-pink);
+  --glow-magenta: 0 0 10px var(--color-primary-magenta), 0 0 20px var(--color-primary-magenta), 0 0 30px var(--color-primary-magenta);
+  --glow-coral: 0 0 10px var(--color-primary-coral), 0 0 20px var(--color-primary-coral), 0 0 30px var(--color-primary-coral);
+  --glow-orange: 0 0 10px var(--color-primary-orange), 0 0 20px var(--color-primary-orange), 0 0 30px var(--color-primary-orange);
+  
+  /* Blur Backgrounds */
+  --blur-backdrop: blur(10px);
+  --blur-strong: blur(20px);
+  
+  /* Shadows */
+  --shadow-neon-purple: 0 4px 20px rgba(164, 54, 255, 0.3);
+  --shadow-neon-pink: 0 4px 20px rgba(201, 37, 194, 0.3);
+  --shadow-neon-magenta: 0 4px 20px rgba(237, 19, 133, 0.3);
+  --shadow-neon-orange: 0 4px 20px rgba(255, 99, 0, 0.3);
+}
+
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
