@@ -6,7 +6,20 @@
       "description": "Desc",
       "category": "Demo",
       "imageUrl": "",
-      "tags": ["React"],
+      "tags": [
+        "React"
+      ],
+      "color": "purple"
+    },
+    {
+      "id": "c0cd",
+      "title": "Toto fait du skate",
+      "description": "Toto est content de faire du skate dans l'école",
+      "category": "Vie de campus",
+      "imageUrl": "https://m.media-amazon.com/images/I/819zWqfSFjL.jpg",
+      "tags": [
+        "toto"
+      ],
       "color": "purple"
     }
   ]
