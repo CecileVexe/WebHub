@@ -15,6 +15,7 @@ interface Project {
 
 interface ProjectCardProps {
   project: Project;
+  role: string;
 }
 
 const colorClasses = {
@@ -38,14 +39,14 @@ const colorClasses = {
   },
 };
 
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, role }: ProjectCardProps) {
   const [isLiked, setIsLiked] = useState(false);
   const colors = colorClasses[project.color];
 
   return (
     <div
   className="bg-white rounded-3xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 group"
-  role="article"
+  role={role}
   aria-labelledby={`project-title-${project.id}`}
 >
   {/* Image */}
