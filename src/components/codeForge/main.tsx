@@ -20,7 +20,7 @@ const main = () => {
       alert("Aucune donnée à exporter. Veuillez d'abord importer un fichier JSON.");
       return;
     }
-    
+
     try {
       await exportToZip(jsonData);
       console.log("Export réussi!");
@@ -35,10 +35,10 @@ const main = () => {
       <h1>CodeForge</h1>
       <div style={{ display: "flex", gap: "10px", marginBottom: "20px"}}>
         <button onClick={handleImport}>Importer un fichier JSON</button>
-        <button 
+        <button
           onClick={handleExport}
           disabled={jsonData.length === 0}
-          style={{ 
+          style={{
             opacity: jsonData.length === 0 ? 0.5 : 1,
             cursor: jsonData.length === 0 ? "not-allowed" : "pointer"
           }}
@@ -52,7 +52,7 @@ const main = () => {
         </div>
       )}
     </div>
-    
+
   </>;
 };
 

@@ -1,3 +1,5 @@
+import {generateAndDownloadZip} from "./generate.ts";
+
 export async function importJson(): Promise<any> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
@@ -16,12 +18,14 @@ export async function importJson(): Promise<any> {
         cleanup();
         return;
       }
+      generateAndDownloadZip(file)
       const reader = new FileReader();
       reader.onload = () => {
         try {
           const text = typeof reader.result === 'string' ? reader.result : '';
           const parsed = JSON.parse(text);
           console.log(parsed);
+          generateAndDownloadZip(parsed)
           resolve(parsed);
 
         } catch (err) {
