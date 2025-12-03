@@ -89,9 +89,7 @@ export const Canvas: React.FC<CanvasProps> = ({
 
   return (
     <>
-    <div id="div">
-      ça marche vous inquiétez pas !
-    </div>
+    <p id="tqt-ca-marche"> Vous inquiétez pas, c'est en cours de développement ! </p>
     </>
   );
 };
