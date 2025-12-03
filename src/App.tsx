@@ -147,7 +147,7 @@ export default function App() {
               <Sparkles className="w-10 h-10 mb-4 relative z-10" />
               <div className="relative z-10">
                 <div className="opacity-90 mb-2">Categories</div>
-                <div>Depuis la DB</div>
+                <div>{filteredProjects.length} Active</div>
               </div>
             </div>
 
@@ -156,7 +156,7 @@ export default function App() {
               <Zap className="w-10 h-10 mb-4 relative z-10" />
               <div className="relative z-10">
                 <div className="opacity-90 mb-2">Technologies</div>
-                <div>Depuis la DB</div>
+                <div>{filteredProjects.length} Active</div>
               </div>
             </div>
           </div>
