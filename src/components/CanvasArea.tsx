@@ -15,7 +15,12 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({ activeTab, projectName, project
   const [jsFile, setJsFile] = useState<File | null>(null);
 
   return (
-    <main className="canvas-area" role="main" aria-label="Zone de travail principale">
+    <main 
+      className="canvas-area" 
+      role="main" 
+      aria-label="Zone de travail principale"
+      style={activeTab === 'animation' ? { padding: 0, overflow: 'hidden' } : undefined}
+    >
       <div className="canvas-container">
         {activeTab === 'design' && (
           <div role="tabpanel" aria-labelledby="design-tab">
@@ -30,7 +35,7 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({ activeTab, projectName, project
         )}
         
         {activeTab === 'animation' && (
-          <div role="tabpanel" aria-labelledby="animation-tab">
+          <div className='main-flow' role="tabpanel" aria-labelledby="animation-tab">
             <MainAnimFlow />
           </div>
         )}

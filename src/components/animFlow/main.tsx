@@ -191,11 +191,13 @@ const Main: React.FC = () => {
   // ------------- styles -------------
   const rootStyle: React.CSSProperties = {
     display: "flex",
+    flexDirection: "column",
     height: "100vh",
     background: theme.colors.background,
     color: theme.colors.text,
     fontFamily:
       'system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
+    overflowY: "auto",
   };
 
   const canvasStyle: React.CSSProperties = {
@@ -204,6 +206,7 @@ const Main: React.FC = () => {
     padding: 18,
     transition: "margin-right 220ms ease",
     overflow: "auto",
+    minHeight: 0,
   };
 
   const canvasInnerStyle: React.CSSProperties = {
@@ -308,53 +311,55 @@ const Main: React.FC = () => {
   };
 
   return (
-    <>
+    <div style={rootStyle}>
       {/* Import bloc */}
-      <button
-  onClick={() => {
-    void exportSceneFiles(canvasFiles, { baseName: "ma-scene" });
-  }}
->
-  Exporter la scène
-</button>
-      <div
-        style={{
-          ...sectionStyle,
-          display: "grid",
-          gap: 8,
-          width: "100%",
-          height: "auto",
-        }}
-      >
-        <div style={{ fontWeight: 700, fontSize: 13 }}>Importer une scène</div>
-
-        <label
+      <div style={{ padding: "18px 18px 0", display: "flex", flexDirection: "column", gap: 12 }}>
+        <button
+          onClick={() => {
+            void exportSceneFiles(canvasFiles, { baseName: "ma-scene" });
+          }}
+          style={primaryBtn}
+        >
+          Exporter la scène
+        </button>
+        
+        <div
           style={{
-            ...buttonBase,
-            textAlign: "center",
-            cursor: "pointer",
-            background: "rgba(255,255,255,0.06)",
+            ...sectionStyle,
+            display: "grid",
+            gap: 8,
           }}
         >
-          Importer un dossier
-          <input
-            type="file"
-            // @ts-expect-error webkitdirectory existe côté Chromium
-            webkitdirectory="true"
-            directory=""
-            multiple
-            onChange={onImportFolder}
-            style={{ display: "none" }}
-            accept=".html,.css,.js"
-          />
-        </label>
+          <div style={{ fontWeight: 700, fontSize: 13 }}>Importer une scène</div>
 
-        <div style={{ fontSize: 12, color: ui.textMuted }}>
-          Le dossier doit contenir un fichier .html, .css et/ou .js.
+          <label
+            style={{
+              ...buttonBase,
+              textAlign: "center",
+              cursor: "pointer",
+              background: "rgba(255,255,255,0.06)",
+            }}
+          >
+            Importer un dossier
+            <input
+              type="file"
+              // @ts-expect-error webkitdirectory existe côté Chromium
+              webkitdirectory="true"
+              directory=""
+              multiple
+              onChange={onImportFolder}
+              style={{ display: "none" }}
+              accept=".html,.css,.js"
+            />
+          </label>
+
+          <div style={{ fontSize: 12, color: ui.textMuted }}>
+            Le dossier doit contenir un fichier .html, .css et/ou .js.
+          </div>
         </div>
       </div>
 
-      <div style={rootStyle}>
+      <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         {/* Canvas */}
         <div ref={targetRef} style={canvasStyle}>
           <div style={{ ...canvasInnerStyle, padding: 0 }}>
@@ -668,7 +673,7 @@ const Main: React.FC = () => {
           </button>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
