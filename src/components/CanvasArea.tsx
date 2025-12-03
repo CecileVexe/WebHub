@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PreviewMode from './PreviewMode';
 import '../styles/Canvas.css';
+import MainAnimFlow from "./animFlow/main";
 
 interface CanvasAreaProps {
   activeTab: 'design' | 'code' | 'animation' | 'preview';
@@ -30,7 +31,7 @@ const CanvasArea: React.FC<CanvasAreaProps> = ({ activeTab, projectName, project
         
         {activeTab === 'animation' && (
           <div role="tabpanel" aria-labelledby="animation-tab">
-            <p>Mode Animation - À venir</p>
+            <MainAnimFlow />
           </div>
         )}
         
