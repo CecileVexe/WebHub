@@ -11,7 +11,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/project/:id" element={<ProjectView />} />
+          <Route path="/projects/:id" element={<ProjectView />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

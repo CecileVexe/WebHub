@@ -13,7 +13,7 @@ const ProjectDetail = () => {
   const [activeTab, setActiveTab] = useState<'design' | 'code' | 'animation'>('design');
   const [showProjectInfo, setShowProjectInfo] = useState(true);
 
-  const project = id ? getProject(id) : undefined;
+  const project = id ? getProject(parseInt(id, 10)) : undefined;
 
   if (!project) {
     return (
@@ -32,8 +32,7 @@ const ProjectDetail = () => {
   return (
     <div className="project-detail">
       <Navbar 
-        projectName={project.name}
-        projectStatus={project.status}
+        projectName={project.title}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
@@ -60,7 +59,7 @@ const ProjectDetail = () => {
         
         <CanvasArea 
           activeTab={activeTab}
-          projectName={project.name}
+          projectName={project.title}
           projectDescription={project.description}
         />
       </div>

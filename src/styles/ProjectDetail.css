@@ -864,26 +864,36 @@
 
 @media (max-width: 768px) {
   .project-detail {
-    height: auto;
+    height: 100vh;
     min-height: 100vh;
   }
   
   .figma-content {
-    flex-direction: column;
-    height: auto;
+    height: calc(100vh - 52px);
     min-height: calc(100vh - 52px);
     position: relative;
-    overflow-y: auto;
   }
   
   .toggle-sidebar-button {
-    display: none;
+    top: 10px;
+    left: 10px;
+    padding: 8px;
+    z-index: 50;
+  }
+  
+  .toggle-sidebar-button.toggle-right {
+    right: 10px;
+    left: auto;
+  }
+  
+  .toggle-sidebar-button svg {
+    width: 18px;
+    height: 18px;
   }
   
   .canvas-area {
     width: 100%;
-    min-height: 400px;
-    flex: 1;
+    height: 100%;
   }
   
   .project-not-found h1 {
@@ -897,13 +907,29 @@
 
 @media (max-width: 480px) {
   .figma-content {
-    height: auto;
+    height: calc(100vh - 48px);
     min-height: calc(100vh - 48px);
+  }
+  
+  .toggle-sidebar-button {
+    padding: 6px;
+    top: 8px;
+    left: 8px;
+  }
+  
+  .toggle-sidebar-button.toggle-right {
+    right: 8px;
+    left: auto;
+  }
+  
+  .toggle-sidebar-button svg {
+    width: 16px;
+    height: 16px;
   }
   
   .canvas-area {
     width: 100%;
-    min-height: 350px;
+    height: 100%;
   }
   
   .project-not-found {

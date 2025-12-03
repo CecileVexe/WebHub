@@ -29,34 +29,16 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ project, onClose }) => {
         </h3>
         <div className="info-list">
           <div className="info-row">
-            <span className="info-label">Name</span>
-            <span className="info-value">{project.name}</span>
+            <span className="info-label">Title</span>
+            <span className="info-value">{project.title}</span>
           </div>
           <div className="info-row">
-            <span className="info-label">Status</span>
-            <span className={`info-value status-${project.status}`}>
-              {project.status}
-            </span>
+            <span className="info-label">Category</span>
+            <span className="info-value">{project.category}</span>
           </div>
           <div className="info-row">
-            <span className="info-label">Created</span>
-            <span className="info-value">
-              {new Date(project.createdAt).toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-              })}
-            </span>
-          </div>
-          <div className="info-row">
-            <span className="info-label">Updated</span>
-            <span className="info-value">
-              {new Date(project.updatedAt).toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-              })}
-            </span>
+            <span className="info-label">ID</span>
+            <span className="info-value">#{project.id}</span>
           </div>
         </div>
       </div>

@@ -4,10 +4,10 @@ import type { Project } from '../types/Project';
 
 interface ProjectContextType {
   projects: Project[];
-  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateProject: (id: string, project: Partial<Project>) => void;
-  deleteProject: (id: string) => void;
-  getProject: (id: string) => Project | undefined;
+  addProject: (project: Omit<Project, 'id'>) => void;
+  updateProject: (id: number, project: Partial<Project>) => void;
+  deleteProject: (id: number) => void;
+  getProject: (id: number) => Project | undefined;
   clearProjects: () => void;
 }
 
@@ -32,52 +32,73 @@ const getInitialProjects = (): Project[] => {
 };
 
 const getDefaultProjects = (): Project[] => {
-  const now = new Date().toISOString();
   return [
     {
-      id: '1',
-      name: 'WebHub Platform',
-      description: 'Plateforme de gestion de projets web avec React et TypeScript',
-      status: 'active',
-      tags: ['React', 'TypeScript', 'Web', 'Platform'],
-      createdAt: now,
-      updatedAt: now,
+      id: 1,
+      title: "E-Commerce Platform",
+      description:
+        "A modern online shopping experience with seamless checkout and product browsing.",
+      category: "E-Commerce",
+      imageUrl:
+        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80",
+      tags: ["React", "TypeScript", "Tailwind"],
+      color: "purple",
     },
     {
-      id: '2',
-      name: 'E-Commerce Dashboard',
-      description: 'Tableau de bord pour la gestion d\'une boutique en ligne',
-      status: 'active',
-      tags: ['E-Commerce', 'Dashboard', 'Analytics'],
-      createdAt: now,
-      updatedAt: now,
+      id: 2,
+      title: "Portfolio Website",
+      description:
+        "Clean and minimalist portfolio showcasing creative work and professional experience.",
+      category: "Portfolio",
+      imageUrl:
+        "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80",
+      tags: ["Next.js", "Design", "Animation"],
+      color: "pink",
     },
     {
-      id: '3',
-      name: 'Mobile App Integration',
-      description: 'Intégration API pour application mobile',
-      status: 'completed',
-      tags: ['Mobile', 'API', 'Integration'],
-      createdAt: now,
-      updatedAt: now,
+      id: 3,
+      title:
+        "Dashboard Analytics",
+      description:
+        "Data visualization dashboard with real-time metrics and interactive charts.",
+      category: "Dashboard",
+      imageUrl:
+        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+      tags: ["React", "Charts", "Analytics"],
+      color: "orange",
     },
     {
-      id: '4',
-      name: 'Analytics System',
-      description: 'Système d\'analyse et de reporting en temps réel',
-      status: 'active',
-      tags: ['Analytics', 'Real-time', 'Reporting'],
-      createdAt: now,
-      updatedAt: now,
+      id: 4,
+      title: "Social Media App",
+      description:
+        "Connect with friends and share moments through an engaging social platform.",
+      category: "Social",
+      imageUrl:
+        "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
+      tags: ["Mobile", "Social", "React Native"],
+      color: "pink",
     },
     {
-      id: '5',
-      name: 'Legacy Migration',
-      description: 'Migration d\'une application legacy vers une architecture moderne',
-      status: 'archived',
-      tags: ['Migration', 'Legacy', 'Modernization'],
-      createdAt: now,
-      updatedAt: now,
+      id: 5,
+      title: "Blog Platform",
+      description:
+        "Content management system for writers with markdown support and SEO optimization.",
+      category: "Content",
+      imageUrl:
+        "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80",
+      tags: ["CMS", "SEO", "Publishing"],
+      color: "purple",
+    },
+    {
+      id: 6,
+      title: "Booking System",
+      description:
+        "Streamlined reservation and scheduling system for service-based businesses.",
+      category: "Business",
+      imageUrl:
+        "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&q=80",
+      tags: ["Booking", "Calendar", "Payments"],
+      color: "orange",
     },
   ];
 };
@@ -94,33 +115,30 @@ export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   }, [projects]);
 
-  const addProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const now = new Date().toISOString();
+  const addProject = (projectData: Omit<Project, 'id'>) => {
     const newProject: Project = {
       ...projectData,
-      id: Date.now().toString(),
-      createdAt: now,
-      updatedAt: now,
+      id: Date.now(),
     };
 
     setProjects((prev) => [...prev, newProject]);
   };
 
-  const updateProject = (id: string, projectData: Partial<Project>) => {
+  const updateProject = (id: number, projectData: Partial<Project>) => {
     setProjects((prev) =>
       prev.map((project) =>
         project.id === id
-          ? { ...project, ...projectData, updatedAt: new Date().toISOString() }
+          ? { ...project, ...projectData }
           : project
       )
     );
   };
 
-  const deleteProject = (id: string) => {
+  const deleteProject = (id: number) => {
     setProjects((prev) => prev.filter((project) => project.id !== id));
   };
 
-  const getProject = (id: string): Project | undefined => {
+  const getProject = (id: number): Project | undefined => {
     return projects.find((project) => project.id === id);
   };
 

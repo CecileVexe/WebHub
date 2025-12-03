@@ -3,12 +3,11 @@ import '../styles/Navbar.css';
 
 interface NavbarProps {
   projectName: string;
-  projectStatus: 'active' | 'completed' | 'archived';
   activeTab: 'design' | 'code' | 'animation';
   onTabChange: (tab: 'design' | 'code' | 'animation') => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ projectName, projectStatus, activeTab, onTabChange }) => {
+const Navbar: React.FC<NavbarProps> = ({ projectName, activeTab, onTabChange }) => {
   const navigate = useNavigate();
 
   return (
@@ -21,9 +20,6 @@ const Navbar: React.FC<NavbarProps> = ({ projectName, projectStatus, activeTab, 
         </button>
         <div className="project-title-nav">
           <h1>{projectName}</h1>
-          <span className={`status-badge status-${projectStatus}`}>
-            {projectStatus}
-          </span>
         </div>
       </div>
       

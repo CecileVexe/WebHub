@@ -1,9 +1,9 @@
 export interface Project {
-  id: string;
-  name: string;
+  id: number;
+  title: string;
   description: string;
-  status: 'active' | 'completed' | 'archived';
-  tags?: string[];
-  createdAt: string;
-  updatedAt: string;
+  category: string;
+  imageUrl: string;
+  tags: string[];
+  color: "purple" | "pink" | "orange";
 }
