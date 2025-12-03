@@ -10,7 +10,7 @@ const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getProject } = useProjects();
-  const [activeTab, setActiveTab] = useState<'design' | 'code' | 'animation'>('design');
+  const [activeTab, setActiveTab] = useState<'design' | 'code' | 'animation' | 'preview'>('design');
   const [showProjectInfo, setShowProjectInfo] = useState(true);
 
   const project = id ? getProject(id) : undefined;
@@ -40,11 +40,12 @@ const ProjectDetail = () => {
       <div className="figma-content">
         {!showProjectInfo && (
           <button 
+            type="button"
             className="toggle-sidebar-button"
             onClick={() => setShowProjectInfo(true)}
-            title="Afficher les détails du projet"
+            aria-label="Afficher les détails du projet"
           >
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor"/>
             </svg>
           </button>

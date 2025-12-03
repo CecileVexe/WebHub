@@ -47,3 +47,54 @@ button {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
+/* ============================================ */
+/* ACCESSIBILITY STYLES FOR RGAA & NVDA       */
+/* ============================================ */
+
+/* Screen reader only class - hides visually but keeps for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Ensure focus indicators are clearly visible for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid #7c3aed;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Improve button and link focus states for better visibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+/* Skip link for keyboard navigation */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #7c3aed;
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  text-decoration: none;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
