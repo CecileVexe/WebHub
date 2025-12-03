@@ -13,7 +13,7 @@ const ProjectDetail = () => {
   const [activeTab, setActiveTab] = useState<'design' | 'code' | 'animation'>('design');
   const [showProjectInfo, setShowProjectInfo] = useState(true);
 
-  const project = id ? getProject(parseInt(id, 10)) : undefined;
+  const project = id ? getProject(id) : undefined;
 
   if (!project) {
     return (

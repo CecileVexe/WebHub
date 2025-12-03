@@ -1,161 +1,113 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import type { Project } from '../types/Project';
+import type { Project } from '../api/projects';
+import * as projectsApi from '../api/projects';
 
 interface ProjectContextType {
   projects: Project[];
-  addProject: (project: Omit<Project, 'id'>) => void;
-  updateProject: (id: number, project: Partial<Project>) => void;
-  deleteProject: (id: number) => void;
-  getProject: (id: number) => Project | undefined;
-  clearProjects: () => void;
+  loading: boolean;
+  error: string | null;
+  addProject: (project: Omit<Project, 'id'>) => Promise<void>;
+  updateProject: (id: string, project: Partial<Project>) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
+  getProject: (id: string) => Project | undefined;
+  refreshProjects: () => Promise<void>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'webhub_projects';
-
-// Initialiser avec des projets par défaut si le localStorage est vide
-const getInitialProjects = (): Project[] => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch (error) {
-      console.error('Error parsing stored projects:', error);
-      return getDefaultProjects();
-    }
-  }
-  
-  return getDefaultProjects();
-};
-
-const getDefaultProjects = (): Project[] => {
-  return [
-    {
-      id: 1,
-      title: "E-Commerce Platform",
-      description:
-        "A modern online shopping experience with seamless checkout and product browsing.",
-      category: "E-Commerce",
-      imageUrl:
-        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80",
-      tags: ["React", "TypeScript", "Tailwind"],
-      color: "purple",
-    },
-    {
-      id: 2,
-      title: "Portfolio Website",
-      description:
-        "Clean and minimalist portfolio showcasing creative work and professional experience.",
-      category: "Portfolio",
-      imageUrl:
-        "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&q=80",
-      tags: ["Next.js", "Design", "Animation"],
-      color: "pink",
-    },
-    {
-      id: 3,
-      title:
-        "Dashboard Analytics",
-      description:
-        "Data visualization dashboard with real-time metrics and interactive charts.",
-      category: "Dashboard",
-      imageUrl:
-        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-      tags: ["React", "Charts", "Analytics"],
-      color: "orange",
-    },
-    {
-      id: 4,
-      title: "Social Media App",
-      description:
-        "Connect with friends and share moments through an engaging social platform.",
-      category: "Social",
-      imageUrl:
-        "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
-      tags: ["Mobile", "Social", "React Native"],
-      color: "pink",
-    },
-    {
-      id: 5,
-      title: "Blog Platform",
-      description:
-        "Content management system for writers with markdown support and SEO optimization.",
-      category: "Content",
-      imageUrl:
-        "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80",
-      tags: ["CMS", "SEO", "Publishing"],
-      color: "purple",
-    },
-    {
-      id: 6,
-      title: "Booking System",
-      description:
-        "Streamlined reservation and scheduling system for service-based businesses.",
-      category: "Business",
-      imageUrl:
-        "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&q=80",
-      tags: ["Booking", "Calendar", "Payments"],
-      color: "orange",
-    },
-  ];
-};
-
 export const ProjectProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [projects, setProjects] = useState<Project[]>(getInitialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Synchroniser avec le localStorage à chaque changement
-  useEffect(() => {
+  // Charger les projets depuis l'API au montage
+  const refreshProjects = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    } catch (error) {
-      console.error('Error saving projects to localStorage:', error);
+      const fetchedProjects = await projectsApi.listProjects();
+      setProjects(fetchedProjects);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load projects';
+      setError(errorMsg);
+      console.error('Error loading projects:', err);
+    } finally {
+      setLoading(false);
     }
-  }, [projects]);
-
-  const addProject = (projectData: Omit<Project, 'id'>) => {
-    const newProject: Project = {
-      ...projectData,
-      id: Date.now(),
-    };
-
-    setProjects((prev) => [...prev, newProject]);
   };
 
-  const updateProject = (id: number, projectData: Partial<Project>) => {
-    setProjects((prev) =>
-      prev.map((project) =>
-        project.id === id
-          ? { ...project, ...projectData }
-          : project
-      )
-    );
+  useEffect(() => {
+    refreshProjects();
+  }, []);
+
+  const addProject = async (projectData: Omit<Project, 'id'>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const newProject = await projectsApi.createProject(projectData);
+      setProjects((prev) => [...prev, newProject]);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to create project';
+      setError(errorMsg);
+      console.error('Error creating project:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteProject = (id: number) => {
-    setProjects((prev) => prev.filter((project) => project.id !== id));
+  const updateProject = async (id: string, projectData: Partial<Project>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedProject = await projectsApi.updateProject(id, projectData);
+      setProjects((prev) =>
+        prev.map((project) =>
+          project.id === id ? updatedProject : project
+        )
+      );
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to update project';
+      setError(errorMsg);
+      console.error('Error updating project:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getProject = (id: number): Project | undefined => {
+  const deleteProject = async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await projectsApi.deleteProject(id);
+      setProjects((prev) => prev.filter((project) => project.id !== id));
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to delete project';
+      setError(errorMsg);
+      console.error('Error deleting project:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getProject = (id: string): Project | undefined => {
     return projects.find((project) => project.id === id);
-  };
-
-  const clearProjects = () => {
-    setProjects([]);
-    localStorage.removeItem(STORAGE_KEY);
   };
 
   return (
     <ProjectContext.Provider
       value={{
         projects,
+        loading,
+        error,
         addProject,
         updateProject,
         deleteProject,
         getProject,
-        clearProjects,
+        refreshProjects,
       }}
     >
       {children}
