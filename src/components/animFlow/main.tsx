@@ -5,6 +5,7 @@ import { useEffectsEngine } from "./effects/useEffectEngine";
 import { loadRegistry, saveRegistry } from "./effects/persistence";
 import type { CanvasFiles } from "./types/canva";
 import type { EffectsRegistry, EffectConfig } from "./types/effects";
+import { exportSceneFiles } from "./export/export";
 
 // --------------------
 // Theme (ta charte)
@@ -309,6 +310,13 @@ const Main: React.FC = () => {
   return (
     <>
       {/* Import bloc */}
+      <button
+  onClick={() => {
+    void exportSceneFiles(canvasFiles, { baseName: "ma-scene" });
+  }}
+>
+  Exporter la scène
+</button>
       <div
         style={{
           ...sectionStyle,
